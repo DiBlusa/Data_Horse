@@ -59,6 +59,7 @@ python main.py
 ## 🛠️ Roadmap
 
 - [x] Initial data classification foundation
+- [ ] Implement user access control with role-based permissions
 - [ ] Improve model/rules for horse categorization
 - [ ] Add genealogical tree module
 - [ ] Expand analytics and reporting features
