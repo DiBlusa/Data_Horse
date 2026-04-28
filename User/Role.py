@@ -8,8 +8,8 @@ class RoleBased:
     def name(self):
         
         roles = {
-            1: "vaqueiro",
-            2: "cuidador",
-            3: "dono",
+            1: "visitor",
+            2: "caregiver",
+            3: "Admin",
         }
         return roles.get(self.id_role, "No role assigned")

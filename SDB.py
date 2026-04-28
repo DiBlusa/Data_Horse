@@ -34,12 +34,12 @@ def create_table():
 
 def _check_permission(action, user_role):
     if user_role is None:
-        user_role = "dono"
+        user_role = "visitor"
 
     permissions = {
-        "vaqueiro": {"get_all_horses", "get_horse"},
-        "cuidador": {"add_horse", "update_horse", "get_horse"},
-        "dono": {"add_horse", "update_horse", "update_distance", "get_horse", "delete_horse", "get_all_horses"},
+        "visitor": {"get_all_horses", "get_horse"},
+        "caregiver": {"add_horse", "update_horse", "get_horse"},
+        "admin": {"add_horse", "update_horse", "update_distance", "get_horse", "delete_horse", "get_all_horses"},
     }
 
     return action in permissions.get(user_role, set())
@@ -47,7 +47,7 @@ def _check_permission(action, user_role):
 
 def add_horse(horse, user_role=None):
     if not _check_permission("add_horse", user_role):
-        raise PermissionError("Apenas cuidadores e dono podem adicionar cavalos.")
+        raise PermissionError("Apenas caregivers e admin podem adicionar cavalos.")
 
     connection = connect()
     cursor = connection.cursor()
@@ -63,7 +63,7 @@ def add_horse(horse, user_role=None):
 
 def update_horse(horse_id, new_name=None, new_time=None, new_theta_deg=None, user_role=None):
     if not _check_permission("update_horse", user_role):
-        raise PermissionError("Apenas cuidadores e dono podem atualizar cavalos.")
+        raise PermissionError("Apenas caregivers e admin podem atualizar cavalos.")
 
     connection = connect()
     cursor = connection.cursor()
@@ -100,7 +100,7 @@ def update_horse(horse_id, new_name=None, new_time=None, new_theta_deg=None, use
 
 def update_distance(horse_id, new_distance, user_role=None):
     if not _check_permission("update_distance", user_role):
-        raise PermissionError("Apenas o dono pode atualizar a distância.")
+        raise PermissionError("Apenas o admin pode atualizar a distância.")
 
     connection = connect()
     cursor = connection.cursor()
@@ -117,7 +117,7 @@ def update_distance(horse_id, new_distance, user_role=None):
 
 def get_horse(horse_id, user_role=None):
     if not _check_permission("get_horse", user_role):
-        raise PermissionError("Apenas vaqueiros, cuidadores e dono podem consultar um cavalo.")
+        raise PermissionError("Apenas visitors, caregivers e admin podem consultar um cavalo.")
 
     connection = connect()
     cursor = connection.cursor()
@@ -134,7 +134,7 @@ def get_horse(horse_id, user_role=None):
 
 def delete_horse(horse_id, user_role=None):
     if not _check_permission("delete_horse", user_role):
-        raise PermissionError("Apenas o dono pode deletar um cavalo.")
+        raise PermissionError("Apenas o admin pode deletar um cavalo.")
 
     connection = connect()
     cursor = connection.cursor()
@@ -150,7 +150,7 @@ def delete_horse(horse_id, user_role=None):
 
 def get_all_horses(user_role=None):
     if not _check_permission("get_all_horses", user_role):
-        raise PermissionError("Apenas vaqueiros e dono podem listar todos os cavalos.")
+        raise PermissionError("Apenas visitors e admin podem listar todos os cavalos.")
 
     connection = connect()
     cursor = connection.cursor()
