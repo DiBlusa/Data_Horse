@@ -10,6 +10,6 @@ class RoleBased:
         roles = {
             1: "visitor",
             2: "caregiver",
-            3: "Admin",
+            3: "admin",
         }
         return roles.get(self.id_role, "No role assigned")
