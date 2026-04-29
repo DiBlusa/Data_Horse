@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -118,10 +118,10 @@
         <h1>🐴 data_horse</h1>
         <form id="loginForm" novalidate>
             <label for="username">Name</label>
-            <input id="username" name="username" type="text" placeholder="Digite seu usuário" autocomplete="username" />
+            <input id="username" name="username" type="text" placeholder="Enter your username" autocomplete="username" />
 
             <label for="password">Password</label>
-            <input id="password" name="password" type="password" placeholder="Digite sua senha" autocomplete="current-password" />
+            <input id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" />
 
             <button type="submit">Login</button>
 
@@ -133,7 +133,7 @@
         const form = document.getElementById("loginForm");
         const message = document.getElementById("message");
 
-        form.addEventListener("submit", (event) => {
+        form.addEventListener("submit", async (event) => {
             event.preventDefault();
             message.style.display = "none";
 
@@ -141,16 +141,39 @@
             const password = document.getElementById("password").value;
 
             if (!username || !password) {
-                message.textContent = "Por favor, preencha os campos de usuário e senha.";
+                message.textContent = "Please fill in both username and password fields.";
                 message.className = "message error";
                 return;
             }
 
-            // Aqui você pode chamar seu backend de autenticação.
-            // Exemplo: fetch('/login', { method: 'POST', body: new FormData(form) })
-            
-            message.textContent = `Bem-vindo, ${username}! Papel: Usuário`; 
-            message.className = "message success";
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    message.textContent = `Welcome, ${data.username}! Role: ${data.role}`;
+                    message.className = "message success";
+                    
+                    // Redirect to main page after 1 second
+                    setTimeout(() => {
+                        window.location.href = '/main.html';
+                    }, 1000);
+                } else {
+                    message.textContent = data.message || 'Invalid username or password.';
+                    message.className = "message error";
+                    document.getElementById("password").value = "";
+                }
+            } catch (error) {
+                message.textContent = 'An error occurred. Please try again.';
+                message.className = "message error";
+            }
         });
     </script>
 </body>

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Horse - Main</title>
+    <style>
+        :root {
+            font-family: "Helvetica", Arial, sans-serif;
+            background: #eef5fb;
+            color: #2c3e50;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 24px;
+            background: linear-gradient(180deg, #f5f9ff 0%, #eaf1f9 100%);
+        }
+
+        .app-shell {
+            width: min(1200px, 100%);
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 24px 80px rgba(44, 62, 80, 0.12);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 1px;
+        }
+
+        .sidebar {
+            background: #2c3e50;
+            color: white;
+            padding: 32px 24px;
+        }
+
+        .sidebar h1 {
+            margin: 0 0 16px;
+            font-size: 2rem;
+            letter-spacing: -0.05em;
+        }
+
+        .sidebar p {
+            margin: 0 0 32px;
+            color: #dfe9f3;
+            line-height: 1.7;
+        }
+
+        .menu-button {
+            width: 100%;
+            margin-bottom: 14px;
+            padding: 14px 18px;
+            background: #3f5d79;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            text-align: left;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .menu-button:hover,
+        .menu-button.active {
+            background: #5478a2;
+        }
+
+        .content {
+            padding: 32px;
+        }
+
+        .content h2 {
+            margin-top: 0;
+            font-size: 2rem;
+        }
+
+        .section {
+            margin-top: 24px;
+            padding: 24px;
+            border: 1px solid #e3e8ef;
+            border-radius: 20px;
+            background: #fbfdff;
+        }
+
+        .section form {
+            display: grid;
+            gap: 16px;
+        }
+
+        .section label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .section input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #c8d6e3;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: white;
+        }
+
+        .section button {
+            width: fit-content;
+            padding: 12px 18px;
+            border: none;
+            border-radius: 12px;
+            background: #3498db;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .section button:hover {
+            background: #2980b9;
+        }
+
+        .message {
+            margin-top: 18px;
+            padding: 14px 16px;
+            border-radius: 12px;
+            display: none;
+        }
+
+        .message.success {
+            background: #e9f8f3;
+            color: #1e6e4b;
+            border: 1px solid #b8e1c9;
+        }
+
+        .message.error {
+            background: #ffecec;
+            color: #a83c3c;
+            border: 1px solid #f5c2c2;
+        }
+
+        .horse-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .horse-table th,
+        .horse-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e3e8ef;
+            text-align: left;
+        }
+
+        .horse-table th {
+            background: #f4f8ff;
+            font-weight: 700;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .status-bar {
+            margin-top: 20px;
+            color: #506680;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 900px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <h1>Data Horse</h1>
+            <p>HTML translation of the main menu. Choose an action to manage horses, update distance, or search by ID.</p>
+            <button class="menu-button active" data-section="dashboard">Dashboard</button>
+            <button class="menu-button" data-section="add">Add Horse</button>
+            <button class="menu-button" data-section="update">Update Horse</button>
+            <button class="menu-button" data-section="distance">Update Distance</button>
+            <button class="menu-button" data-section="search">Search Horse</button>
+            <button class="menu-button" data-section="exit">Exit</button>
+        </aside>
+
+        <main class="content">
+            <h2>Main Menu</h2>
+            <div id="dashboard" class="section">
+                <h3>Horses Registered</h3>
+                <div id="horseList"></div>
+                <div class="status-bar">No horses added yet. Use the "Add Horse" option to register a new horse with default distance 100.</div>
+            </div>
+
+            <div id="add" class="section hide">
+                <h3>Add Horse</h3>
+                <form id="addForm">
+                    <div>
+                        <label for="addName">Name</label>
+                        <input id="addName" type="text" placeholder="Enter horse name" required />
+                    </div>
+                    <div>
+                        <label for="addTime">Time</label>
+                        <input id="addTime" type="number" placeholder="Enter time" required />
+                    </div>
+                    <div>
+                        <label for="addTheta">Theta (degrees)</label>
+                        <input id="addTheta" type="number" placeholder="Enter theta" required />
+                    </div>
+                    <button type="submit">Add Horse</button>
+                </form>
+                <div id="addMessage" class="message"></div>
+            </div>
+
+            <div id="update" class="section hide">
+                <h3>Update Horse</h3>
+                <form id="updateForm">
+                    <div>
+                        <label for="updateId">Horse ID</label>
+                        <input id="updateId" type="number" placeholder="Enter horse ID" required />
+                    </div>
+                    <div>
+                        <label for="updateName">Name</label>
+                        <input id="updateName" type="text" placeholder="Leave blank to keep current" />
+                    </div>
+                    <div>
+                        <label for="updateTime">Time</label>
+                        <input id="updateTime" type="number" placeholder="Leave blank to keep current" />
+                    </div>
+                    <div>
+                        <label for="updateTheta">Theta (degrees)</label>
+                        <input id="updateTheta" type="number" placeholder="Leave blank to keep current" />
+                    </div>
+                    <button type="submit">Update Horse</button>
+                </form>
+                <div id="updateMessage" class="message"></div>
+            </div>
+
+            <div id="distance" class="section hide">
+                <h3>Update Distance</h3>
+                <form id="distanceForm">
+                    <div>
+                        <label for="distanceId">Horse ID</label>
+                        <input id="distanceId" type="number" placeholder="Enter horse ID" required />
+                    </div>
+                    <div>
+                        <label for="distanceValue">New distance</label>
+                        <input id="distanceValue" type="number" placeholder="Enter new distance" required />
+                    </div>
+                    <button type="submit">Update Distance</button>
+                </form>
+                <div id="distanceMessage" class="message"></div>
+            </div>
+
+            <div id="search" class="section hide">
+                <h3>Search Horse by ID</h3>
+                <form id="searchForm">
+                    <div>
+                        <label for="searchId">Horse ID</label>
+                        <input id="searchId" type="number" placeholder="Enter horse ID" required />
+                    </div>
+                    <button type="submit">Search</button>
+                </form>
+                <div id="searchResult" class="section hide"></div>
+                <div id="searchMessage" class="message"></div>
+            </div>
+
+            <div id="exit" class="section hide">
+                <h3>Exit</h3>
+                <p>Program closed.</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const sections = document.querySelectorAll('.section');
+        const buttons = document.querySelectorAll('.menu-button');
+        const horseList = document.getElementById('horseList');
+        const statusBar = document.querySelector('.status-bar');
+
+        function showSection(name) {
+            sections.forEach((section) => {
+                section.classList.toggle('hide', section.id !== name);
+            });
+
+            buttons.forEach((button) => {
+                button.classList.toggle('active', button.dataset.section === name);
+            });
+
+            if (name === 'dashboard') {
+                renderHorseTable();
+            }
+        }
+
+        async function renderHorseTable() {
+            try {
+                const response = await fetch('/api/horses');
+                const data = await response.json();
+
+                if (!data.success) {
+                    horseList.innerHTML = '<p>Error loading horses.</p>';
+                    return;
+                }
+
+                if (!data.horses || data.horses.length === 0) {
+                    horseList.innerHTML = '<p>No horses registered yet.</p>';
+                    statusBar.textContent = 'No horses added yet. Use the "Add Horse" option to register a new horse with default distance 100.';
+                    return;
+                }
+
+                const rows = data.horses.map((horse) => {
+                    return `<tr>
+                        <td>${horse.id}</td>
+                        <td>${horse.name}</td>
+                        <td>${horse.distance}</td>
+                        <td>${horse.time}</td>
+                        <td>${horse.theta}</td>
+                        <td>${horse.speed.toFixed(2)}</td>
+                    </tr>`;
+                }).join('');
+
+                horseList.innerHTML = `
+                    <table class="horse-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Distance</th>
+                                <th>Time</th>
+                                <th>Theta</th>
+                                <th>Speed</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rows}</tbody>
+                    </table>`;
+                statusBar.textContent = `${data.horses.length} horse(s) registered.`;
+            } catch (error) {
+                horseList.innerHTML = '<p>Error fetching horses.</p>';
+            }
+        }
+
+        function showMessage(element, text, type) {
+            element.textContent = text;
+            element.className = `message ${type}`;
+            element.style.display = 'block';
+        }
+
+        function clearMessage(element) {
+            element.textContent = '';
+            element.style.display = 'none';
+        }
+
+        document.querySelectorAll('.menu-button').forEach((button) => {
+            button.addEventListener('click', async () => {
+                if (button.dataset.section === 'exit') {
+                    try {
+                        await fetch('/logout', { method: 'POST' });
+                        window.location.href = '/';
+                    } catch (error) {
+                        console.error('Logout error:', error);
+                    }
+                } else {
+                    showSection(button.dataset.section);
+                }
+            });
+        });
+
+        document.getElementById('addForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const name = document.getElementById('addName').value.trim();
+            const time = document.getElementById('addTime').value;
+            const theta = document.getElementById('addTheta').value;
+            const message = document.getElementById('addMessage');
+
+            clearMessage(message);
+
+            if (!name || !time || !theta) {
+                showMessage(message, 'Please enter a valid name, time, and theta.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/horses', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, time, theta })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(message, data.message, 'success');
+                    event.target.reset();
+                    renderHorseTable();
+                } else {
+                    showMessage(message, data.message, 'error');
+                }
+            } catch (error) {
+                showMessage(message, 'Error adding horse.', 'error');
+            }
+        });
+
+        document.getElementById('updateForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const id = document.getElementById('updateId').value;
+            const name = document.getElementById('updateName').value.trim();
+            const time = document.getElementById('updateTime').value;
+            const theta = document.getElementById('updateTheta').value;
+            const message = document.getElementById('updateMessage');
+
+            clearMessage(message);
+
+            const payload = {};
+            if (name) payload.name = name;
+            if (time) payload.time = time;
+            if (theta) payload.theta = theta;
+
+            try {
+                const response = await fetch(`/api/horses/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(message, data.message, 'success');
+                    renderHorseTable();
+                } else {
+                    showMessage(message, data.message, 'error');
+                }
+            } catch (error) {
+                showMessage(message, 'Error updating horse.', 'error');
+            }
+        });
+
+        document.getElementById('distanceForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const id = document.getElementById('distanceId').value;
+            const distance = document.getElementById('distanceValue').value;
+            const message = document.getElementById('distanceMessage');
+
+            clearMessage(message);
+
+            if (!distance || distance <= 0) {
+                showMessage(message, 'Please enter a valid distance.', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/horses/${id}/distance`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ distance })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage(message, data.message, 'success');
+                    renderHorseTable();
+                } else {
+                    showMessage(message, data.message, 'error');
+                }
+            } catch (error) {
+                showMessage(message, 'Error updating distance.', 'error');
+            }
+        });
+
+        document.getElementById('searchForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const id = document.getElementById('searchId').value;
+            const resultBox = document.getElementById('searchResult');
+            const message = document.getElementById('searchMessage');
+
+            clearMessage(message);
+            resultBox.classList.add('hide');
+            resultBox.innerHTML = '';
+
+            try {
+                const response = await fetch(`/api/horses/${id}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    const horse = data.horse;
+                    resultBox.innerHTML = `
+                        <h4>Horse Details</h4>
+                        <p><strong>ID:</strong> ${horse.id}</p>
+                        <p><strong>Name:</strong> ${horse.name}</p>
+                        <p><strong>Distance:</strong> ${horse.distance}</p>
+                        <p><strong>Time:</strong> ${horse.time}</p>
+                        <p><strong>Theta:</strong> ${horse.theta}</p>
+                        <p><strong>Speed:</strong> ${horse.speed.toFixed(2)}</p>
+                    `;
+                    resultBox.classList.remove('hide');
+                } else {
+                    showMessage(message, data.message, 'error');
+                }
+            } catch (error) {
+                showMessage(message, 'Error searching horse.', 'error');
+            }
+        });
+
+        showSection('dashboard');
+    </script>
+</body>
+</html>
