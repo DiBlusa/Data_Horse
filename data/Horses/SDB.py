@@ -1,12 +1,18 @@
 import sqlite3
 
 
-def connect():
-    return sqlite3.connect("horses.db")
+def connect(user_id=None):
+    """Return a database connection for the current user.
+
+    Each user gets a separate horses database file identified by id_user.
+    If user_id is None, the shared default database is used.
+    """
+    db_name = f"horses_{user_id}.db" if user_id is not None else "horses.db"
+    return sqlite3.connect(db_name)
 
 
-def create_table():
-    connection = connect()
+def create_table(user_id=None):
+    connection = connect(user_id)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -45,11 +51,11 @@ def _check_permission(action, user_role):
     return action in permissions.get(user_role, set())
 
 
-def add_horse(horse, user_role=None):
+def add_horse(horse, user_role=None, user_id=None):
     if not _check_permission("add_horse", user_role):
         raise PermissionError("Apenas caregivers e admin podem adicionar cavalos.")
 
-    connection = connect()
+    connection = connect(user_id)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -61,11 +67,11 @@ def add_horse(horse, user_role=None):
     connection.close()
 
 
-def update_horse(horse_id, new_name=None, new_time=None, new_theta_deg=None, user_role=None):
+def update_horse(horse_id, new_name=None, new_time=None, new_theta_deg=None, user_role=None, user_id=None):
     if not _check_permission("update_horse", user_role):
         raise PermissionError("Apenas caregivers e admin podem atualizar cavalos.")
 
-    connection = connect()
+    connection = connect(user_id)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -98,11 +104,11 @@ def update_horse(horse_id, new_name=None, new_time=None, new_theta_deg=None, use
     connection.close()
 
 
-def update_distance(horse_id, new_distance, user_role=None):
+def update_distance(horse_id, new_distance, user_role=None, user_id=None):
     if not _check_permission("update_distance", user_role):
         raise PermissionError("Apenas o admin pode atualizar a distância.")
 
-    connection = connect()
+    connection = connect(user_id)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -115,11 +121,11 @@ def update_distance(horse_id, new_distance, user_role=None):
     connection.close()
 
 
-def get_horse(horse_id, user_role=None):
+def get_horse(horse_id, user_role=None, user_id=None):
     if not _check_permission("get_horse", user_role):
         raise PermissionError("Apenas visitors, caregivers e admin podem consultar um cavalo.")
 
-    connection = connect()
+    connection = connect(user_id)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -132,11 +138,11 @@ def get_horse(horse_id, user_role=None):
     return horse
 
 
-def delete_horse(horse_id, user_role=None):
+def delete_horse(horse_id, user_role=None, user_id=None):
     if not _check_permission("delete_horse", user_role):
         raise PermissionError("Apenas o admin pode deletar um cavalo.")
 
-    connection = connect()
+    connection = connect(user_id)
     cursor = connection.cursor()
 
     cursor.execute("""
@@ -148,11 +154,11 @@ def delete_horse(horse_id, user_role=None):
     connection.close()
 
 
-def get_all_horses(user_role=None):
+def get_all_horses(user_role=None, user_id=None):
     if not _check_permission("get_all_horses", user_role):
         raise PermissionError("Apenas visitors e admin podem listar todos os cavalos.")
 
-    connection = connect()
+    connection = connect(user_id)
     cursor = connection.cursor()
 
     cursor.execute("SELECT * FROM horses")

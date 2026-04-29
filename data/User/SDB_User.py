@@ -1,6 +1,6 @@
 import sqlite3
-from User.Role import RoleBased
-from User.User import UserRole
+from data.User.Role import RoleBased
+from data.User.User import UserRole
 
 def connect():
     """Return a database connection for the user database."""
