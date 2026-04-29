@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Data Horse - Login</title>
+    <style>
+        :root {
+            font-family: "Helvetica", Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #2c3e50;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #f0f0f0;
+        }
+
+        .login-card {
+            width: min(420px, calc(100vw - 40px));
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 36px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        }
+
+        .login-card h1 {
+            margin: 0 0 32px;
+            font-size: 2.5rem;
+            text-align: center;
+            letter-spacing: -0.03em;
+        }
+
+        .login-card label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .login-card input {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 22px;
+            border: 1px solid #dfe6ed;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .login-card input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.14);
+        }
+
+        .login-card button {
+            width: 100%;
+            padding: 14px 16px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #ffffff;
+            background: #3498db;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .login-card button:hover {
+            background: #2980b9;
+        }
+
+        .message {
+            display: none;
+            margin-top: 16px;
+            padding: 14px 16px;
+            border-radius: 10px;
+            font-size: 0.96rem;
+            line-height: 1.4;
+        }
+
+        .message.success {
+            display: block;
+            background: #e9f8f3;
+            color: #1e6e4b;
+            border: 1px solid #b8e1c9;
+        }
+
+        .message.error {
+            display: block;
+            background: #ffecec;
+            color: #a83c3c;
+            border: 1px solid #f5c2c2;
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 28px 20px;
+            }
+
+            .login-card h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="login-card">
+        <h1>🐴 data_horse</h1>
+        <form id="loginForm" novalidate>
+            <label for="username">Name</label>
+            <input id="username" name="username" type="text" placeholder="Digite seu usuário" autocomplete="username" />
+
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="Digite sua senha" autocomplete="current-password" />
+
+            <button type="submit">Login</button>
+
+            <div id="message" class="message"></div>
+        </form>
+    </section>
+
+    <script>
+        const form = document.getElementById("loginForm");
+        const message = document.getElementById("message");
+
+        form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            message.style.display = "none";
+
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value;
+
+            if (!username || !password) {
+                message.textContent = "Por favor, preencha os campos de usuário e senha.";
+                message.className = "message error";
+                return;
+            }
+
+            // Aqui você pode chamar seu backend de autenticação.
+            // Exemplo: fetch('/login', { method: 'POST', body: new FormData(form) })
+            
+            message.textContent = `Bem-vindo, ${username}! Papel: Usuário`; 
+            message.className = "message success";
+        });
+    </script>
+</body>
+</html>
